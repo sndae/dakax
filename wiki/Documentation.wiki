@@ -2,7 +2,7 @@
 
 = Pinlayout =
 
-[http://daka.googlecode.com/svn/trunk/site/images/dakaXPinOutRes.png]
+[http://dakax.googlecode.com/svn/trunk/site/images/dakaXPinOutRes.png]
 
 Add your content here.
 
