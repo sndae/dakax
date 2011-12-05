@@ -18,6 +18,10 @@ IF(NOT MACH_ARCH)
     SET(MACH_ARCH "64")
 ENDIF()
 
+IF(WIN32)
+	SET(TPN_WIN32 "/EHsc")
+ENDIF()
+		  
 # -----------------------------------------------------------------------------
 # check swig
 FIND_PACKAGE(SWIG REQUIRED)
@@ -50,6 +54,7 @@ ENDIF()
 # -----------------------------------------------------------------------------
 # boost
 FIND_PACKAGE(Boost REQUIRED)
+#FIND_PACKAGE(Boost COMPONENTS thread system filesystem REQUIRED)
 IF(Boost_INCLUDE_DIRS MATCHES "Boost_INCLUDE_DIR-NOTFOUND")
 	MESSAGE("Boost should be set, for example:")
 	MESSAGE("> cmake -DBOOST_ROOT=/usr/??? ..")	
@@ -67,6 +72,7 @@ ELSE()
 		set(Boost_LIBRARIES  "boost_thread.a" "boost_system.a")
 	ELSE()
 		# windows will find the right libs by itself
+		#set(Boost_LIBRARIES  "libboost_thread" "libboost_system")
 	ENDIF()
 ENDIF()
 # -----------------------------------------------------------------------------
@@ -128,7 +134,7 @@ MAKE_DIRECTORY(${CMAKE_CURRENT_BINARY_DIR}/src)
 
 SWIG_ADD_MODULE(DakaX Java ${SWIG_SOURCES})
 SWIG_LINK_LIBRARIES(DakaX ${JAVA_LIBRARIES} ${JNI_LIBRARIES} ${Boost_LIBRARIES} ${LIBS})
-
+message("boost libs:" ${Boost_LIBRARIES})
 
 ADD_CUSTOM_COMMAND(TARGET DakaX
 				   POST_BUILD
