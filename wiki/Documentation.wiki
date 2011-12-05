@@ -1,6 +1,8 @@
 #summary One-sentence summary of this page.
 
-= Introduction =
+= Pinlayout =
+
+[http://code.google.com/p/dakax/source/browse/trunk/site/images/dakaXPinOutRes.png]
 
 Add your content here.
 
