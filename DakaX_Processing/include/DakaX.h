@@ -107,6 +107,8 @@ public:
             _bufferLength = _bufferSize;
 
         memcpy(_buffer,copy._buffer,_bufferLength);
+
+		return this;
     }
 
     void setCmd(unsigned char cmd) { _cmdId = cmd; }
