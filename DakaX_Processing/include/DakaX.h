@@ -24,6 +24,8 @@
 #ifndef _DAKAXWRAPPER_H_
 #define _DAKAXWRAPPER_H_
 
+//#include <WinSock2.h>
+
 #include <vector>
 #include <iostream>
 
@@ -33,6 +35,7 @@
 #include <boost/thread/locks.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
+
 
 #include "AsyncSerial.h"
 
