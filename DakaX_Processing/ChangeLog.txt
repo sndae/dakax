@@ -1,0 +1,15 @@
+ChangeLog - DakaX
+------------------------
+http://code.google.com/p/dakax/
+
+vx.xx status, mm/dd/yyyy
+
+v0.23 , in planning:
+		- *Remove all XML init. functions:
+		- *Added methods for highperformance drawing of the depthMap pointcloud (Opengl VBO)
+		- *Works with Processing 2.0
+		- *Multiple sensors with the generators
+		- *Remove all deprecated functions, some callbacks will change
+		- *Should make an example for calibration file
+
+v
