@@ -19,7 +19,11 @@ public class DakaX extends Thread
 	static 
 	{	// load the nativ shared lib
 		System.loadLibrary("DakaX");
+
+		System.out.println("DakaX Version " + versionStr());
 	}
+  
+  protected final static int DAKAX_VERSION = 11;	// version 0.11
 
   public final static int DAKAX_MSGID_PING         		= 0;
   public final static int DAKAX_MSGID_SENSORDATA   		= 1;
@@ -70,6 +74,16 @@ public class DakaX extends Thread
 	start();
   }
   
+  public static int version()
+  {
+	return DAKAX_VERSION;
+  }
+
+  public static String versionStr()
+  {
+	return String.format("%.2f", (float)DAKAX_VERSION / 100.0f);
+  }
+
   public void dispose()
   {
 	_running = false;
