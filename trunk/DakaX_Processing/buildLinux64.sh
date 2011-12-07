@@ -44,6 +44,9 @@ echo "--- copy ---"
 cp DakaX.jar ~/sketchbook/libraries/DakaX/library/
 cp libDakaX.so ~/sketchbook/libraries/DakaX/library/
 
+cp DakaX.jar ../dist/DakaX/library/
+cp libDakaX.so ../dist/DakaX/library/
+
 # copy the doc
 #cp -r ./doc/* ../dist/all/SimpleOpenNI/documentation/
 
