@@ -41,5 +41,9 @@ echo "--- copy ---"
 # copy the library
 cp DakaX.jar ~/Documents/Processing/libraries/DakaX/library/
 cp libDakaX.jnilib ~/Documents/Processing/libraries/DakaX/library/
+
+cp DakaX.jar ../dist/DakaX/library/
+cp libDakaX.jnilib ../dist/DakaX/library/
+
 # copy the doc
 #cp -r ./doc/* ../dist/all/SimpleOpenNI/documentation/
