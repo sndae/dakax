@@ -37,7 +37,9 @@ public class DakaX extends Thread
   
   protected float[] 	_euler = new float[3];
   protected float[] 	_quat = new float[4];
-  protected float[] 	_homeQuat = null;
+  protected float[] 	_homeQuat = new float[4];
+  protected float[] 	_curQuat = new float[4];
+  protected boolean		_homeQuatFlag = false;
 
   protected int[] 		_accel = new int[3];
   protected int[] 		_gyro = new int[3];
@@ -59,6 +61,7 @@ public class DakaX extends Thread
     _onDakaXMessage = SerialComLib.getMethodRef(_parent,"onDakaXMessage", new Class[] { DataPacket.class,DakaX.class });
 	
 	_sendTimeStep = (int)(1000.0f / (baudRate / 8.0f / (39.0f * 8f)) + .5f);
+	_sendTimeStep = (int)(1000.0f / 60.0f);
 	
 	System.out.println("_sendTimeStep: " + _sendTimeStep);
 
@@ -211,14 +214,18 @@ public class DakaX extends Thread
   public void setHomeRot()
   {
     _homeQuat = quatConjugate(_quat);
+	_homeQuatFlag = true;
   }
   
   public void resetHomeRot()
   {
-    _homeQuat = null;
+	_homeQuatFlag = false;
   }
 
   public float[] quat() { return _quat; }
+  public float[] quatHome() { return _homeQuat; }
+  public float[] curQuat() { return _curQuat; }
+
   public float[] euler() { return _euler; }
 
   public float eulerX() { return _euler[0]; }
@@ -242,9 +249,20 @@ public class DakaX extends Thread
  
   protected void recalc()
   {
-    if(_homeQuat == null)
-      quaternionToEuler(_quat,_euler);
+    if(_homeQuatFlag == false)
+    {
+	  _curQuat[0] = _quat[0];
+	  _curQuat[1] = _quat[1];
+	  _curQuat[2] = _quat[2];
+	  _curQuat[3] = _quat[3];
+
+	  quaternionToEuler(_quat,_euler);
+	}
     else
+	{
+	  //_curQuat = quatProd(_quat,_homeQuat);
+	  _curQuat = quatProd(_homeQuat,_quat);
+
       // calc with offset
       quaternionToEuler(quatProd(_homeQuat, _quat), _euler);      
 
@@ -257,9 +275,15 @@ public class DakaX extends Thread
 //         _parent.println("euler0= " + PApplet.degrees(_euler[0]));
 //         _parent.println("euler1= " + PApplet.degrees(_euler[1]));
 //         _parent.println("euler2= " + PApplet.degrees(_euler[2]));
+	}
       
    }
  
+  // quaternion order
+  // q[0] = w 
+  // q[1] = a = x
+  // q[2] = b = y
+  // q[3] = c = z
 
   // code is taken from the freeImu project
   public static void quaternionToEuler(float[] q, float[] euler) 
@@ -308,4 +332,157 @@ public class DakaX extends Thread
     return conj;
   }
 
+
+  public void getRotMatrix(PMatrix3D rotMat)
+  {
+	getRotMatrix(curQuat(),rotMat);
+  }
+
+  public static void getRotMatrix(float[] quat, PMatrix3D rotMat)
+  {
+	/*
+	float x = quat[1];
+	float y = quat[2];
+	float z = quat[3];
+	float w = quat[0];
+	*/
+
+	float x = -quat[1];
+	float y = quat[3];
+	float z = quat[2];
+	float w = quat[0]; 
+
+	float xx      = x * x;
+	float xy      = x * y;
+	float xz      = x * z;
+	float xw      = x * w;
+
+	float yy      = y * y;
+	float yz      = y * z;
+	float yw      = y * w;
+
+	float zz      = z * z;
+	float zw      = z * w;
+
+	rotMat.m00 = 1.0f - 2.0f * ( yy + zz );
+	rotMat.m01 =     2.0f * ( xy - zw );
+	rotMat.m02 =     2.0f * ( xz + yw );
+
+	rotMat.m10 =     2.0f * ( xy + zw );
+	rotMat.m11 = 1.0f - 2.0f * ( xx + zz );
+	rotMat.m12 =     2.0f * ( yz - xw );
+
+	rotMat.m20 =     2.0f * ( xz - yw );
+	rotMat.m21 =     2.0f * ( yz + xw );
+	rotMat.m22 = 1.0f - 2.0f* ( xx + yy );
+
+	rotMat.m03 = rotMat.m13 = rotMat.m23 = rotMat.m30 = rotMat.m31 = rotMat.m32 = 0.0f;
+	rotMat.m33 = 1.0f;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////
+  // drawing helpers
+  public void drawRefObj(PMatrix3D rotMat)
+  {
+	_parent.pushMatrix();
+	  // sensor rotation
+	  _parent.applyMatrix(rotMat);
+	  //scale(.5,.5,.5);
+	  drawCoordSys();
+
+	  _parent.scale(2);
+	  drawBox();
+	_parent.popMatrix();
+  }
+
+  public void drawRefObj(float rotX,float rotY,float rotZ)
+  {
+	_parent.pushMatrix();
+	  // sensor rotation
+  /*
+	  rotateZ(-rotZ);
+	  rotateX(-rotY);
+	  rotateY(-rotX);
+  */  
+	  _parent.rotateZ(-rotY);
+	  _parent.rotateX(rotZ);
+	  _parent.rotateY(-rotX);
+	  
+	  drawCoordSys();
+
+	  _parent.scale(2);
+	  drawBox();
+	_parent.popMatrix();
+  }
+  
+  public void drawCoordSys()
+  {
+	_parent.pushMatrix();  
+	  _parent.scale(100,100,100);    
+	  
+	  // x axis
+	  _parent.stroke(255,110,110);
+	  _parent.line(0,0,0,1,0,0);
+	  
+	  // y axis
+	  _parent.stroke(110,255,110);
+	  _parent.line(0,0,0,0,1,0);
+	  
+	  // z axis
+	  _parent.stroke(110,110,255);
+	  _parent.line(0,0,0,0,0,1);
+	  
+	_parent.popMatrix();
+  }
+
+  public void drawBox() 
+  {
+	_parent.noStroke();
+	_parent.beginShape(_parent.QUADS);
+	
+	//Z+ (to the drawing area)
+	_parent.fill(0,0,255);
+	_parent.vertex(-20, -5, 30);
+	_parent.vertex(20, -5, 30);
+	_parent.vertex(20, 5, 30);
+	_parent.vertex(-20, 5, 30);
+	
+	//Z-
+	_parent.fill(0,255,255);
+	_parent.vertex(-20, -5, -30);
+	_parent.vertex(20, -5, -30);
+	_parent.vertex(20, 5, -30);
+	_parent.vertex(-20, 5, -30);
+	
+	//X-
+	_parent.fill(255,255,0);
+	_parent.vertex(-20, -5, -30);
+	_parent.vertex(-20, -5, 30);
+	_parent.vertex(-20, 5, 30);
+	_parent.vertex(-20, 5, -30);
+	
+	//X+
+	_parent.fill(255,0,0);
+	_parent.vertex(20, -5, -30);
+	_parent.vertex(20, -5, 30);
+	_parent.vertex(20, 5, 30);
+	_parent.vertex(20, 5, -30);
+	
+	//Y-
+	_parent.fill(255,0,255);
+	_parent.vertex(-20, -5, -30);
+	_parent.vertex(20, -5, -30);
+	_parent.vertex(20, -5, 30);
+	_parent.vertex(-20, -5, 30);
+	
+	//Y+
+	_parent.fill(0,255,0);
+	_parent.vertex(-20, 5, -30);
+	_parent.vertex(20, 5, -30);
+	_parent.vertex(20, 5, 30);
+	_parent.vertex(-20, 5, 30);
+	
+	_parent.endShape();
+  }
+  
 }
