@@ -17,6 +17,7 @@ DakaX  dakaX;
 IMUGraph graph;
 PFont    font;
 boolean  showGraph = true;
+PMatrix3D  rotMatrix = new PMatrix3D();
 
 void setup()
 {
@@ -27,8 +28,9 @@ void setup()
   String os = System.getProperty("os.name").toLowerCase();
   if(os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0)
   {  // linux/unix
-    portName = "/dev/ttyUSB0";
-     //portName = "/dev/rfcomm0";  // bluetooth, didn't get this to work
+    //portName = "/dev/ttyUSB0";
+    portName = "/dev/rfcomm0"; 
+    portName = "/dev/rfcomm1";
   }
   else if(os.indexOf( "mac" ) >= 0)
   {  // mac
@@ -45,7 +47,11 @@ void setup()
   println("Open SerialPort: " + portName );
   dakaX = new DakaX(this, 
                     portName, 
-                    115200);
+                    //115200);
+                    230400);
+                    
+  // change update rate
+  //dakaX.setSerialUpdateRate(50);                    
                     
   // init the graphs                    
   graph = new IMUGraph(500,dakaX,this);
@@ -61,20 +67,22 @@ void draw()
 {
   // update the sensor data
   dakaX.update();
+
+  // get the current rotation matrix
+  dakaX.getRotMatrix(rotMatrix);
   
   // draw the 3d graph obj
   background(0); 
   perspective(radians(60),float(width)/float(height),5,10);
   translate(width/2,height/2);
-  /*
-  drawRefObj(dakaX.eulerX(),
-             dakaX.eulerY(),
-             dakaX.eulerZ()); 
- */
-  drawRefObj(dakaX.eulerX(),
-             dakaX.eulerY(),
-             dakaX.eulerZ()); 
- 
+
+/*
+  dakaX.drawRefObj(dakaX.eulerX(),
+                   dakaX.eulerY(),
+                   dakaX.eulerZ()); 
+*/
+  
+  dakaX.drawRefObj(rotMatrix); 
 
   // draw graph
   if(showGraph)
@@ -100,6 +108,7 @@ void keyPressed()
     // reset home pos
     dakaX.resetHomeRot();
   // set the digital port
+    break;
   case '1':
     // off pin d0
     dakaX.serialCom().beginSend(CMD_SET_D0);
@@ -138,13 +147,13 @@ void keyPressed()
   }
 }
 
-void onDakaXMessage(int cmdId,DakaX dakaX)
+void onDakaXMessage(DataPacket packet,DakaX dakaX)
 {
   /*
-  switch(cmdId)
+  switch(packet.cmd())
   {
   case ????:
-    dakaX.getByte()
+    packet.getByte();
     break;
   }
   */
