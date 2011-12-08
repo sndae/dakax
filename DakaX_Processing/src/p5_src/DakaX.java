@@ -52,6 +52,7 @@ public class DakaX extends Thread
   protected boolean _running = false;
   protected int		_sleepTime = 2;	// update to check if there is any serial data
 
+  protected boolean		_open = false;
 
   public DakaX(PApplet cbRef,
                String portName,
@@ -70,10 +71,18 @@ public class DakaX extends Thread
 	System.out.println("_sendTimeStep: " + _sendTimeStep);
 
 	_parent.registerDispose(this);
-     // start the thread
-	start();
+
+	if(_serialCom.isOpen())
+	{  // start the thread
+	  _open = true;
+	  start();	
+	}
+	else
+	  _open = false;
   }
   
+  public boolean isOpen() { return _open; }
+
   public static int version()
   {
 	return DAKAX_VERSION;
