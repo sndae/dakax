@@ -326,11 +326,17 @@ void SerialComLibBase::endSend()
 
 void SerialComLibBase::write(unsigned char byte)
 {
+    if(!_open)
+      return;
+
     _serialPort->write((char*)&byte,1);
 }
 
 void SerialComLibBase::send(DataPacket& dataPacket)
 {
+    if(!_open)
+      return;
+
     boost::mutex::scoped_lock l(_sendSerialMutex);
 
     //std::cout << "SerialComLibBase::send" << std::endl;
