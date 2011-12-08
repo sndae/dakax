@@ -49,7 +49,12 @@ void setup()
                     portName, 
                     //115200);
                     230400);
-                    
+  if(dakaX.isOpen() == false)
+  {
+	println("Can't open SerialPort !");
+	exit();
+  }
+
   // change update rate
   //dakaX.setSerialUpdateRate(50);                    
                     

@@ -23,7 +23,7 @@ public class DakaX extends Thread
 		System.out.println("DakaX Version " + versionStr());
 	}
   
-  protected final static int DAKAX_VERSION = 11;	// version 0.11
+  protected final static int DAKAX_VERSION = 12;	// version x.xx
 
   public final static int DAKAX_MSGID_PING         		= 0;
   public final static int DAKAX_MSGID_SENSORDATA   		= 1;
