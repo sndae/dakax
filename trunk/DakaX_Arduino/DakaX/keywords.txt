@@ -1,0 +1,32 @@
+###############################################################################
+# class
+DakaXImpl	KEYWORD1
+DakaX	KEYWORD3
+
+###############################################################################
+# method + function
+begin	KEYWORD2
+setBtModuleBaud KEYWORD2
+update	KEYWORD2
+eulerX	KEYWORD2
+eulerY	KEYWORD2
+eulerZ	KEYWORD2
+quatA	KEYWORD2
+quatB	KEYWORD2
+quatC	KEYWORD2
+quatD	KEYWORD2
+accelX	KEYWORD2
+accelY	KEYWORD2
+accelZ	KEYWORD2
+gyroX	KEYWORD2
+gyroY	KEYWORD2
+gyroZ	KEYWORD2
+magX	KEYWORD2
+magY	KEYWORD2
+magZ	KEYWORD2
+
+###############################################################################
+# contants
+DAKAX_WIRELESS_NO	LITERAL1	Constants
+DAKAX_WIRELESS_BLUETOOTH	LITERAL1	Constants
+DAKAX_WIRELESS_XBEE	LITERAL1	Constants
