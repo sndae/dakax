@@ -99,8 +99,11 @@ unsigned short DataPacket::getUShort()
 {
     if(_readBufferPos+1 < _bufferLength)
     {
-        return(_buffer[_readBufferPos++] + (_buffer[_readBufferPos++] << 8));
-    }
+        unsigned short val = (_buffer[_readBufferPos] + (_buffer[_readBufferPos+1] << 8));
+        _readBufferPos += 2;
+        return val;    
+	  
+	}
     return 0;
 }
 
@@ -268,6 +271,7 @@ bool SerialComLibBase::open(const char* serialPortName,unsigned long baudRate)
   }
   catch(std::exception& e)
   {
+    std::cout << "DakaX Serial Error: " << e.what() << std::endl;
     return false;
   }
 
